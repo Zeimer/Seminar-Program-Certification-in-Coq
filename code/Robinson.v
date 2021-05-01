@@ -1,6 +1,9 @@
 Require Import List.
+Import ListNotations.
+
 Require Import Nat.
 Require Import Arith.
+Require Import Lia.
 
 Require Import Classes.RelationClasses.
 Require Import Relations.Relation_Operators.
@@ -9,6 +12,7 @@ Require Import Program.Tactics.
 Require Import Program.Wf.
 Require Import Wellfounded.Lexicographic_Product.
 Require Import Wellfounded.Inverse_Image.
+Require Import Recdef.
 
 Require Import MSets.MSetFacts.
 Require Import MSets.MSetProperties.
@@ -107,9 +111,9 @@ Inductive HasVar (x:VarId) : Tm -> Prop :=
     | HasVar_app: forall (f : SymId) (ts : list Tm) (t : Tm),
         HasVar x t -> In t ts -> HasVar x (App f ts).
 
-Hint Constructors HasVar.
+Hint Constructors HasVar : core.
 
-Fixpoint applySubstToVar (x : VarId) (sb : Subst) :=
+Definition applySubstToVar (x : VarId) (sb : Subst) :=
 match sb with
     | (y, t) => if Nat.eq_dec x y then t else Var x
 end.
@@ -169,15 +173,15 @@ Proof.
       inversion HH; auto.
   + induction xs.
     - right; intro HH.
-      inversion HH; subst. inversion H3.
-    - inversion H; subst.
-      destruct H2.
+      inversion HH; subst. inversion H2.
+    - inversion X; subst.
+      destruct H0.
       * left. constructor 2 with a. assumption. constructor 1; auto.
-      * specialize (IHxs H3).
+      * specialize (IHxs X0).
         destruct IHxs.
         ** left. inversion h; subst. constructor 2 with t. eauto.
            constructor 2. auto.
-        ** right. intro HH. inversion HH; subst. inversion H4; subst.
+        ** right. intro HH. inversion HH; subst. inversion H2; subst.
             *** apply n; auto.
             *** apply n0; eauto.
 Defined.
@@ -277,7 +281,7 @@ Proof.
   + auto.
   + induction xs; simpl.
     - auto.
-    - inversion H. eauto with arith.
+    - inversion X. eauto with arith.
 Qed.
 
 Lemma fvStackCard_monotone1: forall t0 t1 stack,
@@ -307,16 +311,12 @@ Proof.
     apply right_lex; simpl. eapply lt_trans; eauto.
 Qed.
 
-Require Import Omega.
-
 Lemma stackSize_cons :
   forall (t1 t2 : Tm) (s : Stack),
     stackSize s < stackSize ((t1, t2) :: s).
 Proof.
-  intros. pose (size_gt0 t1); pose (size_gt0 t2). cbn. omega.
+  intros. pose (size_gt0 t1); pose (size_gt0 t2). cbn. lia.
 Qed.
-
-Require Import Recdef.
 
 Program Fixpoint robinsonUnif (stack: Stack) (mgu:VarMap) {wf stacklt stack}
    : option VarMap :=
@@ -360,9 +360,6 @@ apply wf_inverse_image.
 apply stacklt_wf.
 Defined.
 
-Require Import List.
-Import ListNotations.
-
 Ltac inv H := inversion H; subst; clear H; try contradiction; auto.
 
 Lemma hasnt :
@@ -382,8 +379,8 @@ Proof.
     [(Var 0, Var 0)] eq_refl ltac:(inversion 1) 0 (App 0 [Var 1; Var 2; Var 3])
     hasnt).
   compute in H. inv H.
-    omega.
-    omega.
+    lia.
+    lia.
 Qed.
 
 Print Assumptions the_universe_explodes.

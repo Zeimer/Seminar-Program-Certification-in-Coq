@@ -13,11 +13,9 @@
 (** Let's start with inductive propositions: *)
 
 Print False.
-
 (* ===> Inductive False : Prop := *)
 
 Print True.
-
 (* ===> Inductive True : Prop :=
             | I : True *)
 
@@ -38,16 +36,13 @@ Inductive VeryTrue : Prop :=
     [VeryTrue] can be likened to [Empty_set], [unit] and [bool]: *)
 
 Print Empty_set.
-
 (* ===> Inductive Empty_set : Set := .*)
 
 Print unit.
-
 (* ===> Inductive unit : Set :=
             | tt : unit *)
 
 Print bool.
-
 (* ===> Inductive bool : Set :=
             | true : bool
             | false : bool *)
@@ -210,9 +205,11 @@ Qed.
     of a surprise because we have shown before that they both are
     contractible, i.e. both have only a single element. *)
 
+Require ClassicalFacts.
+
 Module Classical.
 
-Require Import ClassicalFacts.
+Import ClassicalFacts.
 
 (** There's another axiom we can assume: the Axiom of Propositional
     Extensionality, which lives in the module [ClassicalFacts]. *)
@@ -658,10 +655,10 @@ Check even.
     Programming Languages (exercises 1.1, 1.2). Each one is in a separate
     module in order to avoid name clashes. Do them.
 
-    You can use the tactic [omega], which can solve arithmetical goals with
+    You can use the tactic [lia], which can solve arithmetical goals with
     [0], [S], [+] and multiplication by a constant. *)
 
-Require Import Omega.
+Require Import Arith ZArith Lia.
 
 Module Ex1_1.
 
@@ -676,12 +673,12 @@ Proof.
   split.
     induction 1.
       exists 0. cbn. trivial.
-      destruct IHP as [k IH]. exists (S k). rewrite IH. omega.
+      destruct IHP as [k IH]. exists (S k). rewrite IH. lia.
     destruct 1 as [k H]. subst. induction k as [| k'].
       cbn. constructor.
       replace (2 + 3 * S k') with (S (S (S (2 + 3 * k')))).
         constructor. assumption.
-        omega.
+        lia.
 Qed.
 (* end hide *)
 
@@ -701,17 +698,17 @@ Proof.
   split.
     induction 1.
       exists 0, 0. cbn. trivial.
-      destruct IHP as [k [l IH]]. exists (S k), l. subst. cbn. omega.
-      destruct IHP as [k [l IH]]. exists k, (S l). subst. cbn. omega.
+      destruct IHP as [k [l IH]]. exists (S k), l. subst. cbn. lia.
+      destruct IHP as [k [l IH]]. exists k, (S l). subst. cbn. lia.
     destruct 1 as [k [l H]]. subst. induction k as [| k'].
       induction l as [| l'].
         cbn. constructor.
         replace (P _) with (P (3 + 1 + 3 * l')).
           apply c2. cbn in *. assumption.
-          f_equal. omega.
+          f_equal. lia.
       replace (P _) with (P (2 + 1 + 2 * k' + 3 * l)).
         constructor. assumption.
-        f_equal. omega.
+        f_equal. lia.
 Qed.
 (* end hide *)
 
@@ -730,12 +727,12 @@ Proof.
   split.
     induction 1.
       trivial.
-      subst. omega.
+      subst. lia.
     intros ->. induction n as [| n'].
       cbn. constructor.
       replace (1 + 2 * _) with (2 + 1 + 2 * n').
         constructor. assumption.
-        omega.
+        lia.
 Qed.
 (* end hide *)
 
@@ -753,13 +750,13 @@ Theorem P_char :
 Proof.
   split.
     induction 1.
-      trivial.
-      subst. cbn. rewrite (mult_comm _ (S n)). cbn. omega.
+      reflexivity.
+      subst. cbn. rewrite (mult_comm _ (S n)). cbn. lia.
     intros ->. induction n as [| n'].
       cbn. constructor.
       replace (S n' * S n') with (n' * n' + 2 * n' + 1).
         constructor. assumption.
-        subst. cbn. rewrite (mult_comm _ (S n')). cbn. omega.
+        subst. cbn. rewrite (mult_comm _ (S n')). cbn. lia.
 Qed.
 (* end hide *)
 
@@ -778,7 +775,7 @@ Proof.
   split.
     induction 1.
       cbn. trivial.
-      omega.
+      lia.
     intros ->. induction n as [| n'].
       cbn. constructor.
       cbn. rewrite <- !plus_n_Sm. constructor. assumption.
@@ -787,13 +784,13 @@ Qed.
 
 End Ex2_1.
 
+Require Import FunInd.
+
 Module Ex2_2.
 
 Inductive P : nat -> nat -> Prop :=
     | c0 : P 0 1
     | c1 : forall n m : nat, P n m -> P (S n) (2 * m).
-
-Require Import FunInd.
 
 Function pow2 (n : nat) : nat :=
 match n with
@@ -806,7 +803,7 @@ Theorem P_char :
 (* begin hide *)
 Proof.
   split.
-    induction 1; cbn; omega.
+    induction 1; cbn; lia.
     intros ->. induction n as [| n']; cbn; constructor; assumption.
 Qed.
 (* end hide *)
@@ -833,7 +830,7 @@ Proof.
   split.
     induction 1.
       cbn. split; trivial.
-      destruct IHP; subst; split; cbn; omega.
+      destruct IHP; subst; split; cbn; lia.
     intros [-> ->]. induction a as [| a']; cbn in *.
       constructor.
       rewrite plus_comm. constructor. assumption.
@@ -856,14 +853,14 @@ Proof.
     induction 1.
       cbn. split; trivial.
       destruct IHP; subst. split; cbn in *.
-        omega.
-        rewrite (mult_comm _ (S a)). cbn. omega.
+        lia.
+        rewrite (mult_comm _ (S a)). cbn. lia.
     intros [-> ->]. induction a as [| a']; cbn.
       constructor.
       rewrite (mult_comm _ (S _)). replace (P _ _ _) with
       (P (1 + a') (2 + 1 + 2 * a') ((1 + 2 * a') + (a' * a'))).
         constructor. assumption.
-        f_equal; cbn; omega.
+        f_equal; cbn; lia.
 Qed.
 (* end hide *)
 
@@ -1355,7 +1352,7 @@ Theorem even_2n :
 Proof.
   induction 1.
     exists 0. trivial.
-    destruct IHeven as [k IH]. exists (S k). cbn. omega.
+    destruct IHeven as [k IH]. exists (S k). cbn. lia.
 Qed.
 (* end hide *)
 
@@ -1365,7 +1362,7 @@ Theorem odd_2n_1 :
 Proof.
   induction 1.
     exists 0. trivial.
-    destruct IHodd as [k IH]. exists (S k). omega.
+    destruct IHodd as [k IH]. exists (S k). lia.
 Qed.
 (* end hide *)
 
@@ -1448,8 +1445,8 @@ Proof.
   induction 1 using even'_odd'_ind
   with (P0 := fun (n : nat) (H : odd' n) => exists k : nat, n = 2 * k + 1).
     exists 0. trivial.
-    destruct IHeven' as [k IH]. exists (S k). omega.
-    destruct IHeven' as [k IH]. exists k. omega.
+    destruct IHeven' as [k IH]. exists (S k). lia.
+    destruct IHeven' as [k IH]. exists k. lia.
 Qed.
 
 (** It was much easier this time. To prove the theorem we use [induction 1]
@@ -1470,8 +1467,8 @@ Proof.
   induction 1 using odd'_even'_ind
   with (P := fun (n : nat) (H : even' n) => exists k : nat, n = 2 * k).
     exists 0. trivial.
-    destruct IHodd' as [k IH]. exists (S k). omega.
-    destruct IHodd' as [k IH]. exists k. omega.
+    destruct IHodd' as [k IH]. exists (S k). lia.
+    destruct IHodd' as [k IH]. exists k. lia.
 Qed.
 (* end hide *)
 
@@ -1490,9 +1487,9 @@ with odd'_2n_1' :
 Proof.
   destruct 1.
     exists 0. trivial.
-    destruct (odd'_2n_1' _ H) as [k IH]. exists (S k). omega.
+    destruct (odd'_2n_1' _ H) as [k IH]. exists (S k). lia.
   destruct 1.
-    destruct (even'_2n' _ H) as [k IH]. exists k. omega.
+    destruct (even'_2n' _ H) as [k IH]. exists k. lia.
 Qed.
 
 (** The above alternative proof is only 11 lines long, which is better
@@ -2048,10 +2045,10 @@ Proof.
   induction 1.
     replace (S (S (2 * n))) with (2 * (S n)).
       constructor.
-      omega.
+      lia.
     replace (div2_rel _ _) with (div2_rel (2 * (S n) + 1) (S n)).
       constructor.
-      cbn. f_equal. omega.
+      cbn. f_equal. lia.
 Qed.
 (* end hide *)
 
@@ -2077,7 +2074,7 @@ Proof.
   induction 1.
     induction n using nat_ind_2; trivial.
       cbn in *. rewrite plus_comm. cbn. do 2 f_equal.
-        rewrite <- IHn at 3. f_equal. omega.
+        rewrite <- IHn at 3. f_equal. lia.
     rewrite plus_comm. induction n using nat_ind_2; cbn in *; trivial.
       rewrite <- plus_n_O in *. rewrite plus_comm. cbn in *. rewrite IHn.
       trivial.
@@ -2090,9 +2087,11 @@ Qed.
     isn't everything we can achieve using inductive relations. Another
     thing is specifying partial functions. *)
 
+Require ZArith.
+
 Module Zfact.
 
-Require Import ZArith.
+Import ZArith.
 
 Open Scope Z.
 
@@ -2123,7 +2122,7 @@ Theorem Zfact_neg :
 Proof.
   induction 2.
     inversion H.
-    apply IHZfact. omega.
+    apply IHZfact. lia.
 Qed.
 (* end hide *)
 
@@ -2161,7 +2160,7 @@ Inductive collatz : nat -> nat -> Prop :=
     | collatz_odd : forall n r : nat,
         odd n -> collatz (3 * n + 1) r -> collatz n r.
 
-Hint Constructors collatz.
+Hint Constructors collatz : core.
 
 Theorem collatz_42 : collatz 42 1.
 Proof.
@@ -2337,20 +2336,20 @@ Theorem lt_div2'' :
   forall n : nat, 0 < n -> div2 n < n.
 Proof.
   intro. apply div2_ind'.
-    omega.
-    omega.
+    lia.
+    lia.
     intros. destruct n0 as [| [| n']]; cbn in *.
-      omega.
-      omega.
-      apply lt_n_S. apply lt_trans with (S (S n')); omega.
+      lia.
+      lia.
+      apply lt_n_S. apply lt_trans with (S (S n')); lia.
 Restart.
   intro. functional induction @div2 n.
-    omega.
-    omega.
+    lia.
+    lia.
     intros. destruct n' as [| [| n]]; cbn in *.
-      omega.
-      omega.
-      apply lt_n_S. apply lt_trans with (S (S n)); omega.
+      lia.
+      lia.
+      apply lt_n_S. apply lt_trans with (S (S n)); lia.
 Qed.
 
 (** Here is an example use of the induction principle we crafted for
@@ -2710,7 +2709,7 @@ Qed.
 
 Section little_semantics.
 
-Axioms Var aExp bExp : Set.
+Variables Var aExp bExp : Set.
 
 (** Note: there's a reason for using [Axioms] instead of, say, [Variables],
     that will be explained later.
@@ -2728,7 +2727,7 @@ Inductive instr : Set :=
     assignment [Assign] and the while loop [While]. They can be sequenced
     using [Seq]. *)
 
-Axiom
+Axioms
   (state : Set)
   (update : state -> Var -> Z -> option state)
   (evalA : state -> aExp -> option Z)
@@ -2763,7 +2762,7 @@ Inductive exec : state -> instr -> state -> Prop :=
     nothing, [Assign] and [While] work as expected. [Seq i1 i2] means "execute
     i1 and then i2". *)
 
-Hint Constructors instr exec.
+Hint Constructors instr exec : core.
 
 (** We want to prove a rule for while from Hoare logic. It says, roughly,
     that if we execute a while loop and if a loop invariant [P] holds
@@ -2860,7 +2859,7 @@ match H with
     | ?f ?x1 => is_var x1; replace_nonvars f
     | ?f ?x1 =>
         let x1' := fresh "x1" in
-        let H1 := fresh "H1" in remember x1 as x1' eqn: H1; replace_nonvars f
+        let H100 := fresh "H100" in remember x1 as x1' eqn: H100; replace_nonvars f
     | _ => idtac
 end.
 
@@ -2887,13 +2886,6 @@ Theorem HoareWhileRule' :
       exec s1 i s2 -> P s2) -> P s -> exec s (While b i) s' ->
         P s' /\ evalB s' b = Some false.
 Proof.
-(* begin hide *)
-  Require Import Equality.
-  intros P b i s s' H H0 H1.
-  gen H; gen H0.
-  dependent induction H1; eauto.
-Restart.
-(* end hide *)
   intros. ind H1.
 Qed.
 

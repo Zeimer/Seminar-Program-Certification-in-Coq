@@ -4,7 +4,7 @@
    To get mark 4, solve exercises 1-4.
    To get mark 5, solve exercises 1-5. *)
 
-Require Import Arith Bool List Eqdep Utf8 Omega.
+Require Import Arith Bool List Eqdep Utf8 Lia.
 
 (*Require Import CpdtTactics.*)
 
@@ -76,7 +76,7 @@ Lemma depth_min_max :
 Proof.
   induction t as [| n m Hnm Hmn v l IHl r IHr]; cbn.
     trivial.
-    apply le_n_S. minmax; firstorder omega.
+    apply le_n_S. minmax; firstorder lia.
 Qed.
 
 Theorem balanced : ∀ n (t : AvlTree n), 2 * depth min t ≥ depth max t.
@@ -84,7 +84,7 @@ Proof.
   unfold ge.
   induction t as [| n m Hnm Hmn v l IHl r IHr]; cbn.
     trivial.
-    apply le_n_S. minmax; try omega; cbn in *; rewrite plus_0_r in *.
+    apply le_n_S. minmax; try lia; cbn in *; rewrite plus_0_r in *.
 Admitted.
 
 (* Exercise 4 *)

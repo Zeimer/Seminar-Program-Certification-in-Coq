@@ -1,13 +1,13 @@
 (** * Quicksort using Bove-Capretta, [Type] version *)
 
-Module BoveCapretta_Type.
-
 Require Import List.
 Import ListNotations.
 
 Require Import Nat.
 Require Import Arith.Wf_nat.
-Require Import Omega.
+Require Import Lia.
+
+Module BoveCapretta_Type.
 
 Inductive qsDom {A : Type} (leb : A -> A -> bool) : list A -> Type :=
     | qsDom_nil : qsDom leb []
@@ -16,8 +16,8 @@ Inductive qsDom {A : Type} (leb : A -> A -> bool) : list A -> Type :=
         qsDom leb (filter (fun x : A => negb (leb x h)) t) ->
           qsDom leb (h :: t).
 
-Arguments qsDom_nil [A leb].
-Arguments qsDom_cons [A leb t] _ _ _.
+Arguments qsDom_nil  {A leb}.
+Arguments qsDom_cons {A leb t} _ _ _.
 
 Fixpoint qs_aux {A : Type} (leb : A -> A -> bool) (l : list A)
   (H : qsDom leb l) : list A :=
@@ -40,7 +40,7 @@ Lemma filter_length :
   forall (A : Type) (f : A -> bool) (l : list A),
     length (filter f l) <= length l.
 Proof.
-  induction l as [| h t]; simpl; try destruct (f h); cbn; omega.
+  induction l as [| h t]; simpl; try destruct (f h); cbn; lia.
 Qed.
 
 Theorem qsDom_all :
@@ -66,13 +66,6 @@ End BoveCapretta_Type.
 
 Module BoveCapretta_Prop.
 
-Require Import List.
-Import ListNotations.
-
-Require Import Nat.
-Require Import Arith.Wf_nat.
-Require Import Omega.
-
 Inductive qsDom {A : Type} (leb : A -> A -> bool) : list A -> Prop :=
     | qsDom_nil : qsDom leb []
     | qsDom_cons : forall (t : list A) (h : A),
@@ -80,8 +73,8 @@ Inductive qsDom {A : Type} (leb : A -> A -> bool) : list A -> Prop :=
         qsDom leb (filter (fun x : A => negb (leb x h)) t) ->
           qsDom leb (h :: t).
 
-Arguments qsDom_nil [A leb].
-Arguments qsDom_cons [A leb t] _ _ _.
+Arguments qsDom_nil  {A leb}.
+Arguments qsDom_cons {A leb t} _ _ _.
 
 Lemma invl :
   forall (A : Type) (leb : A -> A -> bool) (h : A) (t l : list A),
@@ -122,7 +115,7 @@ Lemma filter_length :
   forall (A : Type) (f : A -> bool) (l : list A),
     length (filter f l) <= length l.
 Proof.
-  induction l as [| h t]; simpl; try destruct (f h); cbn; omega.
+  induction l as [| h t]; simpl; try destruct (f h); cbn; lia.
 Qed.
 
 Theorem qsDom_all :

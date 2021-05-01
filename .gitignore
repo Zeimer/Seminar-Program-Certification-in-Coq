@@ -1,6 +1,22 @@
-**coqdeps.d
-**aux
-**vo
-**glob
+**.glob
+**.aux
+**.vo
+**.vok
+**.vos
 
-code/Notes*
+**~
+
+**.fdb_latexmk
+**.fls
+**.log
+**.out
+tex/*.tex
+**.toc
+**.sty
+**.synctex.gz
+
+.coqdeps.d
+.makefile.d
+
+.vscode
+.lia.cache
