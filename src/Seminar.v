@@ -2160,7 +2160,7 @@ Inductive collatz : nat -> nat -> Prop :=
     | collatz_odd : forall n r : nat,
         odd n -> collatz (3 * n + 1) r -> collatz n r.
 
-Hint Constructors collatz : core.
+Global Hint Constructors collatz : core.
 
 Theorem collatz_42 : collatz 42 1.
 Proof.

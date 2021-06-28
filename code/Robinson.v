@@ -111,7 +111,7 @@ Inductive HasVar (x:VarId) : Tm -> Prop :=
     | HasVar_app: forall (f : SymId) (ts : list Tm) (t : Tm),
         HasVar x t -> In t ts -> HasVar x (App f ts).
 
-Hint Constructors HasVar : core.
+Global Hint Constructors HasVar : core.
 
 Definition applySubstToVar (x : VarId) (sb : Subst) :=
 match sb with
