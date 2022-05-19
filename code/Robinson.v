@@ -86,6 +86,7 @@ Module VarIdDecidableType <: DecidableType.
   Definition t := nat.
   Definition eq := @eq t.
 
+  #[export]
   Instance eq_equiv : Equivalence eq .
   Proof.
     constructor.
