@@ -3,7 +3,7 @@
 # Script adapted from https://github.com/wkolowski/Typonomikon
 
 coq_makefile -R "." SeminarInduction -arg "-async-proofs-cache force" -o makefile $(find . -name "*v")
-make
+make -j `nproc`
 rm makefile makefile.conf .makefile.d
 
 coqdoc src/*v                                             \
